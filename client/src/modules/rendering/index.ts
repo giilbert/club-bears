@@ -1,6 +1,26 @@
 import Mesh from "./Mesh";
 import Shader from "./Shader";
 
+// prettier-ignore
+const vertices = [
+  1, 1,
+  1, -1,
+  -1, -1,
+  -1, 1,
+];
+// prettier-ignore
+const indices = [
+  0, 1, 2,
+  0, 2, 3,
+];
+// prettier-ignore
+const uvs = [
+  1, 0,
+  1, 1,
+  0, 1,
+  0, 0,
+];
+
 class RenderingController {
   gl: WebGLRenderingContext;
   clearColor: [number, number, number, number];
@@ -9,7 +29,10 @@ class RenderingController {
     this.gl = gl;
     this.clearColor = [0.1, 0.1, 0.1, 1];
 
-    this.gl.clearColor.apply(this.gl, this.clearColor);
+    gl.clearColor.apply(gl, this.clearColor);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
   clear() {
@@ -17,26 +40,6 @@ class RenderingController {
   }
 
   draw() {
-    // prettier-ignore
-    const vertices = [
-      0.5, 0.5,
-      0.5, -0.5,
-      -0.5, -0.5,
-      -0.5, 0.5,
-    ];
-    // prettier-ignore
-    const indices = [
-      0, 1, 2,
-      0, 2, 3,
-    ];
-    // prettier-ignore
-    const uvs = [
-      1, 0,
-      1, 1,
-      0, 1,
-      0, 0,
-    ];
-
     const shader = new Shader(
       `#version 300 es
 in vec3 aVertexPosition;
@@ -65,13 +68,13 @@ void main() {
     );
     const mesh = new Mesh(vertices, indices, uvs);
 
-    console.log(shader.uniformLocations.uSampler);
     this.gl.uniform1i(shader.uniformLocations.uSampler, 0);
     mesh.attachShader(shader);
 
     const b = () => {
       this.clear();
       mesh.draw();
+
       requestAnimationFrame(b);
     };
 

@@ -20,7 +20,9 @@ class Game {
       this.resizeToFitWindow();
     });
 
-    const gl = canvas.getContext("webgl2");
+    const gl = canvas.getContext("webgl2", {
+      alpha: false,
+    });
     if (!gl) throw new Error("WebGL2 not supported!");
     this.gl = gl;
 

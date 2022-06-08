@@ -2,8 +2,8 @@ import { getGame } from "../../Game";
 
 // wrapper around WebGLTexture
 class TextureResource {
-  url: string;
-  texture: WebGLTexture;
+  public url: string;
+  public texture: WebGLTexture;
 
   constructor(url: string) {
     this.url = url;
@@ -32,6 +32,10 @@ class TextureResource {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    this.texture = texture;
+
+    return this;
   }
 }
 
