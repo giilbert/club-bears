@@ -1,3 +1,4 @@
+import { mat4 } from "gl-matrix";
 import Mesh from "./Mesh";
 import Shader from "./Shader";
 
@@ -24,6 +25,8 @@ const uvs = [
 class RenderingController {
   gl: WebGLRenderingContext;
   clearColor: [number, number, number, number];
+  spriteShader: Shader;
+  planeMesh: Mesh;
 
   constructor(gl: WebGLRenderingContext) {
     this.gl = gl;
@@ -33,14 +36,8 @@ class RenderingController {
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  }
 
-  clear() {
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-  }
-
-  draw() {
-    const shader = new Shader(
+    this.spriteShader = new Shader(
       `#version 300 es
 in vec3 aVertexPosition;
 in vec2 aTexCoord;
@@ -66,14 +63,21 @@ void main() {
       [],
       ["uSampler"]
     );
-    const mesh = new Mesh(vertices, indices, uvs);
 
-    this.gl.uniform1i(shader.uniformLocations.uSampler, 0);
-    mesh.attachShader(shader);
+    this.planeMesh = new Mesh(vertices, indices, uvs);
+    this.planeMesh.attachShader(this.spriteShader);
+  }
+
+  clear() {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+  }
+
+  draw() {
+    this.gl.uniform1i(this.spriteShader.uniformLocations.uSampler, 0);
 
     const b = () => {
       this.clear();
-      mesh.draw();
+      this.planeMesh.draw();
 
       requestAnimationFrame(b);
     };

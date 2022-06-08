@@ -25,6 +25,8 @@ class Game {
     });
     if (!gl) throw new Error("WebGL2 not supported!");
     this.gl = gl;
+    window.__ClubBears = { ...window.__ClubBears };
+    window.__ClubBears.gl = gl;
 
     this.renderer = new RenderingController(gl);
     this.renderer.clear();
@@ -51,6 +53,11 @@ export function getGame() {
   if (!window.__ClubBears?.game)
     throw "Cannot access game before initialization";
   return window.__ClubBears.game;
+}
+
+export function getGl() {
+  if (!window.__ClubBears?.gl) throw "Cannot access gl before initialization";
+  return window.__ClubBears.gl;
 }
 
 export default Game;

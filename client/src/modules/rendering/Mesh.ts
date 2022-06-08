@@ -1,4 +1,4 @@
-import { getGame } from "../../Game";
+import { getGame, getGl } from "../../Game";
 import Shader from "./Shader";
 
 const VERTEX_SIZE = 2;
@@ -11,7 +11,7 @@ class Mesh {
   uvBuffer: WebGLBuffer | null;
 
   constructor(vertices: number[], indices: number[], uvs: number[]) {
-    const gl = getGame().gl;
+    const gl = getGl();
 
     const vao = gl.createVertexArray();
     if (!vao) throw "Unable to create VAO";
@@ -40,7 +40,7 @@ class Mesh {
   }
 
   attachShader(shader: Shader) {
-    const gl = getGame().gl;
+    const gl = getGl();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(

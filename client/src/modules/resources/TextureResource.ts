@@ -12,6 +12,7 @@ class TextureResource {
 
   async load() {
     const gl = getGame().gl;
+
     const resource = await new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new Image();
       image.addEventListener("load", () => resolve(image));

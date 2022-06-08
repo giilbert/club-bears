@@ -1,7 +1,7 @@
-import { getGame } from "../../Game";
+import { getGame, getGl } from "../../Game";
 
 function compileProgram(type: number, source: string) {
-  const gl = getGame().gl;
+  const gl = getGl();
   const shader = gl.createShader(type);
   if (!shader) throw "Shader creation error";
 
@@ -37,7 +37,7 @@ class Shader {
     attributes: string[] = [],
     uniforms: string[] = []
   ) {
-    const gl = getGame().gl;
+    const gl = getGl();
 
     const vertexShader = compileProgram(gl.VERTEX_SHADER, vertexSource);
     const fragmentShader = compileProgram(gl.FRAGMENT_SHADER, fragmentSource);
