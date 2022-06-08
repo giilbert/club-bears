@@ -17,7 +17,7 @@ function compileProgram(type: number, source: string) {
   return shader;
 }
 
-type AttributeList = "aVertexPosition" | string;
+type AttributeList = "aVertexPosition" | "aTexCoord" | string;
 
 type UniformsList =
   | "uTime"
@@ -57,6 +57,7 @@ class Shader {
     // attributes
     this.attributeLocations = {
       aVertexPosition: gl.getAttribLocation(program, "aVertexPosition"),
+      aTexCoord: gl.getAttribLocation(program, "aTexCoord"),
     };
 
     attributes.forEach((name) => {

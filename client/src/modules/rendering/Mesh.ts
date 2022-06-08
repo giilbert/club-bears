@@ -7,7 +7,10 @@ class Mesh {
   vao: WebGLVertexArrayObject;
   indicesLength: number;
 
-  constructor(vertices: number[], indices: number[]) {
+  vertexBuffer: WebGLBuffer | null;
+  uvBuffer: WebGLBuffer | null;
+
+  constructor(vertices: number[], indices: number[], uvs: number[]) {
     const gl = getGame().gl;
 
     const vao = gl.createVertexArray();
@@ -26,13 +29,20 @@ class Mesh {
       gl.STATIC_DRAW
     );
 
+    const uvBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
+
     this.indicesLength = indices.length;
     this.vao = vao;
+    this.vertexBuffer = vertexBuffer;
+    this.uvBuffer = uvBuffer;
   }
 
   attachShader(shader: Shader) {
     const gl = getGame().gl;
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(
       shader.attributeLocations.aVertexPosition,
       VERTEX_SIZE,
@@ -42,6 +52,17 @@ class Mesh {
       0
     );
     gl.enableVertexAttribArray(shader.attributeLocations.aVertexPosition);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+    gl.vertexAttribPointer(
+      shader.attributeLocations.aTexCoord,
+      2,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+    gl.enableVertexAttribArray(shader.attributeLocations.aTexCoord);
   }
 
   draw() {

@@ -1,7 +1,6 @@
 import NetworkController from "./modules/networking";
 import RenderingController from "./modules/rendering";
-import Mesh from "./modules/rendering/Mesh";
-import Shader from "./modules/rendering/Shader";
+import ResourcesController from "./modules/resources";
 
 class Game {
   gl: WebGL2RenderingContext;
@@ -9,6 +8,7 @@ class Game {
 
   renderer: RenderingController;
   network: NetworkController;
+  resources: ResourcesController;
 
   constructor(canvas: HTMLCanvasElement) {
     console.log("Club Bears init!");
@@ -30,50 +30,18 @@ class Game {
     this.network = new NetworkController();
     this.network.on("message", console.log);
 
-    setTimeout(() => this.draw());
+    this.resources = new ResourcesController();
+
+    setTimeout(() => {
+      this.resources.load().then(() => {
+        this.renderer.draw();
+      });
+    });
   }
 
   resizeToFitWindow() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-  }
-
-  draw() {
-    // prettier-ignore
-    const vertices = [
-      0.5, 0.5,
-      0.5, -0.5,
-      -0.5, -0.5,
-      -0.5, 0.5,
-    ];
-    // prettier-ignore
-    const indices = [
-      0, 1, 2,
-      0, 2, 3
-    ];
-
-    const shader = new Shader(
-      `#version 300 es
-in vec3 aVertexPosition;
-
-void main() {
-  gl_Position = vec4(aVertexPosition, 1.0);
-}
-      `,
-      `#version 300 es
-precision mediump float;
-
-out vec4 outColor;
-
-void main() {
-  outColor = vec4(0.0, 1.0, 0.0, 1.0);
-}
-`
-    );
-    const mesh = new Mesh(vertices, indices);
-
-    mesh.attachShader(shader);
-    mesh.draw();
   }
 }
 
