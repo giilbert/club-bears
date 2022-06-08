@@ -20,6 +20,7 @@ class TextureResource {
     });
 
     const texture = gl.createTexture();
+    if (!texture) throw "Texture creation failed.";
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(
       gl.TEXTURE_2D,

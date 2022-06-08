@@ -1,5 +1,7 @@
 import TextureResource from "./TextureResource";
 
+const TEXTURES = ["/bear.png"];
+
 class ResourcesController {
   textures: Record<string, TextureResource>;
 
@@ -9,13 +11,12 @@ class ResourcesController {
 
   async load() {
     this.textures = Object.fromEntries(
-      (await Promise.all([new TextureResource("/bear.png").load()])).map(
-        (res) => {
-          return [res.url, res];
-        }
-      )
+      (
+        await Promise.all(
+          TEXTURES.map((url) => new TextureResource(url).load())
+        )
+      ).map((res) => [res.url, res])
     );
-    console.log(this.textures);
   }
 }
 
