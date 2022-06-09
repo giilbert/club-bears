@@ -8,6 +8,7 @@ const App: React.FC = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     window.__ClubBears = {
+      ...window.__ClubBears,
       game: new Game(canvas),
     };
   }, [canvasRef.current]);

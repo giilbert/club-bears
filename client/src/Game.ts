@@ -46,6 +46,7 @@ class Game {
   resizeToFitWindow() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
+    if (this.gl) this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 }
 

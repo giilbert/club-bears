@@ -67,7 +67,7 @@ class Shader {
     // uniforms
     this.uniformLocations = {
       uTime: gl.getUniformLocation(program, "uTime"),
-      uModelMatrix: gl.getUniformLocation(program, "uProjectionMatrix"),
+      uModelMatrix: gl.getUniformLocation(program, "uModelMatrix"),
       uViewMatrix: gl.getUniformLocation(program, "uViewMatrix"),
       uProjectionMatrix: gl.getUniformLocation(program, "uProjectionMatrix"),
     };

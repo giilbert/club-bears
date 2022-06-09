@@ -1,6 +1,7 @@
-import { mat4 } from "gl-matrix";
+import { mat4, quat, vec3 } from "gl-matrix";
 import Mesh from "./Mesh";
 import Shader from "./Shader";
+import Transform from "./Transform";
 
 // prettier-ignore
 const vertices = [
@@ -43,9 +44,12 @@ in vec3 aVertexPosition;
 in vec2 aTexCoord;
 out vec2 texCoord;
 
+uniform mat4 uProjectionMatrix;
+uniform mat4 uModelMatrix;
+
 void main() {
   texCoord = aTexCoord;
-  gl_Position = vec4(aVertexPosition, 1.0);
+  gl_Position = uProjectionMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
 }
       `,
       `#version 300 es
@@ -57,7 +61,6 @@ out vec4 outColor;
 
 void main() {
   outColor = texture(uSampler, texCoord);
-//  outColor = vec4(texCoord, 0.0, 1.0);
 }
 `,
       [],
@@ -66,6 +69,8 @@ void main() {
 
     this.planeMesh = new Mesh(vertices, indices, uvs);
     this.planeMesh.attachShader(this.spriteShader);
+
+    requestAnimationFrame(() => this.draw());
   }
 
   clear() {
@@ -73,16 +78,46 @@ void main() {
   }
 
   draw() {
+    const projection = mat4.create();
+    const aspectRatio = window.innerWidth / window.innerHeight;
+
+    const SIZE = 4;
+    mat4.ortho(
+      projection,
+      -SIZE * aspectRatio,
+      SIZE * aspectRatio,
+      -SIZE,
+      SIZE,
+      0,
+      100
+    );
+
     this.gl.uniform1i(this.spriteShader.uniformLocations.uSampler, 0);
+    this.gl.uniformMatrix4fv(
+      this.spriteShader.uniformLocations.uProjectionMatrix,
+      false,
+      projection
+    );
 
-    const b = () => {
-      this.clear();
-      this.planeMesh.draw();
+    const transform = new Transform();
+    quat.rotateZ(
+      transform.rotation,
+      transform.rotation,
+      performance.now() / 400
+    );
+    transform.position = vec3.fromValues(performance.now() / 1000, 0, 0);
+    transform.updateTransform();
 
-      requestAnimationFrame(b);
-    };
+    this.gl.uniformMatrix4fv(
+      this.spriteShader.uniformLocations.uModelMatrix,
+      false,
+      transform.matrix
+    );
 
-    requestAnimationFrame(b);
+    this.clear();
+    this.planeMesh.draw();
+
+    requestAnimationFrame(() => this.draw());
   }
 }
 
