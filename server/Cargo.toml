@@ -7,5 +7,14 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
+tokio-stream="0.1.9"
 warp = "0.3"
 futures-util = "0.3.21"
+
+[dependencies.uuid]
+version = "1.1.2"
+features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+]
