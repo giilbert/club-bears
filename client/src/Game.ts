@@ -32,8 +32,6 @@ class Game {
     this.renderer.clear();
 
     this.network = new NetworkController();
-    this.network.on("message", console.log);
-
     this.resources = new ResourcesController();
 
     setTimeout(() => {

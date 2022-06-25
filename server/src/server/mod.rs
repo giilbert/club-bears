@@ -8,6 +8,7 @@ use warp::Filter;
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
+use crate::packet::outbound_packet::*;
 use crate::packet;
 use crate::server::structs::*;
 mod players;
@@ -52,7 +53,12 @@ pub async fn on_connection(socket: WebSocket, players: Players) {
 
     players.write().await.insert(socket_id, player.clone());
 
-    player.sender.send(Ok(Message::text(socket_id.to_string()))).unwrap();
+    player.sender.send((OutboundPacket {
+        packet_type: OutboundPacketType::HandshakeReply,
+        data: serde_json::to_string(&HandshakeResponse {
+            id: socket_id.to_string()
+        }).unwrap()
+    }).into()).unwrap();
 
     while let Some(result) = socket_receiver.next().await {
         use packet::IncomingPacketType;
@@ -73,7 +79,6 @@ pub async fn on_connection(socket: WebSocket, players: Players) {
         let packet = packet.unwrap();
         match packet.packet_type {
             IncomingPacketType::UpdatePosition => players::update_position(&mut player, packet, &players).await,
-            _ => panic!("unknown packet")
         }
     }
 
