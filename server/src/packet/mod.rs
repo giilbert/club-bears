@@ -1,6 +1,7 @@
 use std::string::String;
 use warp::ws::Message;
-mod bytes;
+pub mod bytes;
+pub mod outbound_packet;
 
 #[derive(Copy, Clone)]
 pub enum IncomingPacketType {

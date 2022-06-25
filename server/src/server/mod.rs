@@ -9,9 +9,14 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 
 use crate::packet;
+use crate::server::structs::*;
+mod players;
+mod structs;
 
+#[derive(Clone, Debug)]
 pub struct Player {
-    sender: mpsc::UnboundedSender<Message>
+    position: Vec2,
+    sender: mpsc::UnboundedSender<Result<Message, warp::Error>>
 }
 
 type Players = Arc<RwLock<HashMap<Uuid, Player>>>;
@@ -40,11 +45,14 @@ pub async fn on_connection(socket: WebSocket, players: Players) {
     let client_receiver = UnboundedReceiverStream::new(client_receiver);
     tokio::task::spawn(client_receiver.forward(socket_sender));
 
-    // players.write().await.insert(socket_id, Player {
-    //   sender: client_sender
-    // });
+    let mut player = Player {
+        position: Vec2::default(),
+        sender: client_sender
+    };
 
-    client_sender.send(Ok(Message::text(socket_id.to_string()))).unwrap();
+    players.write().await.insert(socket_id, player.clone());
+
+    player.sender.send(Ok(Message::text(socket_id.to_string()))).unwrap();
 
     while let Some(result) = socket_receiver.next().await {
         use packet::IncomingPacketType;
@@ -61,11 +69,14 @@ pub async fn on_connection(socket: WebSocket, players: Players) {
         if packet.is_err() {
             continue;
         }
+
         let packet = packet.unwrap();
         match packet.packet_type {
-            IncomingPacketType::UpdatePosition => println!("update position"),
+            IncomingPacketType::UpdatePosition => players::update_position(&mut player, packet, &players).await,
             _ => panic!("unknown packet")
         }
     }
+
+    players.write().await.remove(&socket_id);
 }
 

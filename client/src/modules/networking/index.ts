@@ -24,9 +24,9 @@ class NetworkController extends EventEmitter {
       setInterval(() => {
         this.sendPacket(
           OutboundPacketTypes.UpdatePosition,
-          b.concat(b.num(2.323), b.num(20))
+          b.concat(b.num(performance.now()), b.num(20))
         );
-      }, 1000);
+      }, 50);
     });
     this.ws.addEventListener("close", () => this.emit("close"));
     this.ws.addEventListener("message", (msg) => this.emit("message", msg));
